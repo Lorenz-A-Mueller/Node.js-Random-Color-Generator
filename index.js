@@ -13,4 +13,12 @@
       randomHexArr.push(digitArray[getRandomIndex()]);
     }
     const randomHex = '#' + randomHexArr.join('');
-    console.log((chalk.hex(randomHex)(randomHex)))
+    console.log(chalk.hex(randomHex)(`
+      ###############################
+      ###############################
+      ###                         ###
+      ###         ${randomHex}         ###
+      ###                         ###
+      ###############################
+      ###############################
+      ###############################`))
