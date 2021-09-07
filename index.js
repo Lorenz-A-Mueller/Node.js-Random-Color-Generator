@@ -7,7 +7,7 @@
    // input
 
    let input1 = process.argv[2]
-   const input2 = process.argv[3]
+   let input2 = process.argv[3]
 
 
   // set completely random color
@@ -71,11 +71,12 @@ if(input1 === "ask") {
     output: process.stdout
   });
   rl.question(`Enter a color (red, green, or blue)\n`, askedColor => {
-    input1 = askedColor
-    console.log(input1)
-    rl.close()
-    adaptColorAndPrint()
-
+    rl.question('Dark or light?\n', askedBrightness => {
+      input1 = askedColor
+      input2 = askedBrightness
+      rl.close()
+      adaptColorAndPrint()
+    })
   })
 } else {
   adaptColorAndPrint()
