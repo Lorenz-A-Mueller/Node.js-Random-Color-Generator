@@ -7,13 +7,13 @@
    const input2 = process.argv[3]
 
 
-  //set completely random color
+  // set completely random color
 
    let hue = Math.floor(Math.random()*361)
-   let saturation = Math.floor(Math.random()*101)
+   const saturation = Math.floor(Math.random()*101)
    let brightness = Math.floor(Math.random()*101)
 
-    // hue input
+    // hue input (set hue to a fixed value)
 
     if (input1) {
 
@@ -27,7 +27,7 @@
         console.log('first input must be \"red\", \"green\", or \"blue\"')
       }
     }
-    //brightness input
+    // brightness input (set brightness to a fixed value)
 
     if (input2) {
 
@@ -40,13 +40,10 @@
       }
     }
 
-    const randomHSL = `(${hue}, ${saturation}% ${brightness}%)`
-    console.log(randomHSL)
 
     // convert to HEX
 
-    let randomHex = convert.hsl.hex(hue, saturation, brightness)
-    console.log(randomHex)
+    const randomHex = convert.hsl.hex(hue, saturation, brightness)
 
 
     // no input
