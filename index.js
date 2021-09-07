@@ -1,6 +1,6 @@
   const chalk = require("chalk")
   const convert = require("color-convert")
-  const readline = require("node:readline");
+  const readline = require("readline-sync");
 
   let input1 = process.argv[2]
   let input2 = process.argv[3]
@@ -62,18 +62,13 @@
 // check for the ask-input
 
   if(input1 === "ask") {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    rl.question(`Enter a color (red, green, or blue)\n`, askedColor => {  // adapt input1 and input2 according to input, then trigger adaptColor()
-      rl.question('Dark or light?\n', askedBrightness => {
-        input1 = askedColor
-        input2 = askedBrightness
-        rl.close()
+
+    input1 = readline.question(`Enter a color (red, green, or blue)\n`)
+    input2 = readline.question(`Bright or dark?\n`)
+
         adaptColor()
-       })
-    })
+
+
   } else {
   adaptColor()
   }
