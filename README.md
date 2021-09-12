@@ -1,7 +1,9 @@
 # Node.js Random Color Generator
 
-.) The program creates a random HEX color which is displayed to the console. The HEX code of the color is also depicted.
+.) The CLI creates a random HEX color which is displayed to the console as a box of hashes (#). The HEX code is shown centered inside the box.
 
-.) It accepts an input of "red", "green", or "blue" and a second input of "light" or "dark". In this case, the resulting color will have a corresponding hue or brightness factor.
+.) Furthermore, the CLI accepts a first input of a color (a hue) and a second input of the value "light" or "dark". If those values are provided, the resulting random color will have a corresponding hue or lightness factor.
 
-.) Users can also enter "ask" as the first argument. This triggers two questions (enter color and brightness).
+.) The first input can also be a value in the format WWxHH. If provided by the user in that way, the box will appear with the requested width and height.
+
+.) Users can also enter "ask" as the first argument. This triggers two questions (enter color and brightness). If the color (hue) value is not found, the program will ask again.

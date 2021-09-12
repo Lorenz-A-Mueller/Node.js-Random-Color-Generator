@@ -1,119 +1,94 @@
-const chalk = require('chalk');
-const convert = require('color-convert');
-const readline = require('readline-sync');
+import convert from 'color-convert';
+import readline from 'readline-sync';
+import getCustomHue, { customHue } from './getCustomHue.js';
+import getCustomLightness, { customLightness } from './getCustomLightness.js';
+import print from './print.js';
 
 let input1 = process.argv[2];
 let input2 = process.argv[3];
 
-// get hue, saturation and lightness in order to construct a random HSL-color (will stay that way if user doesn't enter data)
+export let desiredHue;
+export let desiredLightness;
+export let color;
+export let boxDimensions = '31x9'; // default dimensions of the box
+
+// get random hue, saturation and lightness values in order to construct a random HSL-color.
 // restrict saturation and lightness to values between 30 and 70
 
-let hue = Math.floor(Math.random() * 361);
-let saturation = 30 + Math.floor(Math.random() * 41);
-let lightness = 30 + Math.floor(Math.random() * 41);
+const randomSaturation = 30 + Math.floor(Math.random() * 41);
+const randomLightness = 30 + Math.floor(Math.random() * 41);
+const randomHue = Math.floor(Math.random() * 361);
 
-// function askHue. Will be called if the user inputs "ask". Ask for a color and resets hue values according to the input.
+// check whether the user requests a custom box:
+// #1) There could be three inputs (process.argv[4] is truthy)
+// #2) The first input could start with a number (that way, it is possible to enter box-dimensions and a hue, but no lightness value)
+// (#1 is included so an input like "node index.js a12x23 red light" will not mistake the first input for a hue)
+// The inputs then have to be moved one element further in the array.
 
-function askHue() {
-  let repeatQuestion = false;
-  input1 = readline.question(`Please enter a color\n`).toLowerCase();
+if (process.argv[4] || /^(\d)/.test(process.argv[2])) {
+  input1 = process.argv[3];
+  input2 = process.argv[4];
 
-  switch (input1) {
-    case 'red':
-      hue = 0;
-      break;
-    case 'orange':
-      hue = 30;
-      break;
-    case 'yellow':
-      hue = 60;
-      break;
-    case 'olive':
-      hue = 90;
-      break;
-    case 'green':
-      hue = 120;
-      break;
-    case 'teal':
-      hue = 150;
-      break;
-    case 'cyan':
-      hue = 180;
-      break;
-    case 'blue':
-      hue = 210;
-      break;
-    case 'violet':
-      hue = 240;
-      break;
-    case 'purple':
-      hue = 270;
-      break;
-    case 'magenta':
-      hue = 300;
-      break;
-    case 'scarlet':
-      hue = 330;
-      break;
+  // check whether the checkbox-input follows the right format. Should be W(W)xHH.
+  // (here though, width and length can be arbitrarily big (will only give an error message later, in print.js)
 
-    // extra cases:
-
-    case 'white':
-      lightness = 100;
-      break;
-    case 'black':
-      lightness = 0;
-      break;
-    case 'gray':
-      saturation = 0;
-      break;
-
-    // if input is not a defined color, call the function recursively (until user input is valid)
-
-    default:
-      console.log('Color not found. Please try another.');
-      repeatQuestion = true;
+  if (!/^(\d)+x(\d)+/.test(process.argv[2])) {
+    console.log('Invalid box format. Should be W(W)xHH. --> Ignored!');
+  } else {
+    boxDimensions = process.argv[2];
   }
-  if (repeatQuestion) askHue();
 }
 
-// check if "ask" was put in by the user (if so, call askHue)
+// If user enters "ask",  ask for a a custom hue value first, then for a lightness value
 
-if (input1 === 'ask') askHue();
+if (input1 === 'ask') {
+  do {
+    desiredHue = readline.question(`Please enter a color\n`).toLowerCase();
+    getCustomHue();
+    if (!customHue) {
+      console.log('Color not found. Please choose another.');
+    }
+  } while (!customHue); // if no valid color, customHue will not have been set, asks again
 
-// if there was a first input and the color was neither white nor black
-// ask for light/dark  [light -> 70; dark -> 30 lightness]
+  if (customHue !== 'white' && customHue !== 'black') {
+    // (if the hue value was "white" or "black", don't ask for lightness)
+    desiredLightness = readline.question(`Light or dark?\n`).toLowerCase();
+    getCustomLightness();
+  }
+} else if (input1) {
+  // if another input1 than ask, directly check for hue value
+  desiredHue = input1;
+  getCustomHue();
+  if (!customHue) {
+    console.log('Could not find requested hue. --> Ignored!');
+  }
 
-if (input1 && lightness !== 100 && lightness !== 0) {
-  input2 = readline.question(`Light or dark?\n`).toLowerCase();
-
-  if (input2 === 'dark') {
-    lightness = 30;
-  } else if (input2 === 'light') {
-    lightness = 70;
-  } else if (input2) {
-    console.log('Second input should be "light" or "dark"  --> Ignored!');
+  if (input2) {
+    // if also an input2 exists, test if it fits the lightness values
+    desiredLightness = input2;
+    getCustomLightness();
   }
 }
 
 // convert to HEX (with the color-convert module)
 
-const randomColor = convert.hsl.hex(hue, saturation, lightness);
+if (customHue === 'white') {
+  color = convert.hsl.hex(randomHue, randomSaturation, 100); // white  given (lightness = 100)
+} else if (customHue === 'black') {
+  color = convert.hsl.hex(randomHue, randomSaturation, 0); // black given (lightness = 0) (white & black will ignore a set customLightness)
+} else if (customHue === 'grey' && customLightness) {
+  color = convert.hsl.hex(randomHue, 0, customLightness); // grey given with customLightness (saturation = 0)
+} else if (customHue === 'grey') {
+  color = convert.hsl.hex(randomHue, 0, randomLightness); // grey given without customLightness
+} else if (customHue && customLightness) {
+  color = convert.hsl.hex(customHue, randomSaturation, customLightness); // hue and lightness given
+} else if (customLightness) {
+  color = convert.hsl.hex(randomHue, randomSaturation, customLightness); // only lightness given (hue was not found)
+} else if (customHue) {
+  color = convert.hsl.hex(customHue, randomSaturation, randomLightness); // only hue given (not grey, white, or black ( have been 'cared for' above))
+} else {
+  color = convert.hsl.hex(randomHue, randomSaturation, randomLightness); // completely random
+}
 
-// print the color
-
-const fullRow = '#'.repeat(31) + '\n';
-const holeRow = '#'.repeat(3) + ' '.repeat(25) + '#'.repeat(3) + '\n';
-const centerRow =
-  '#'.repeat(3) +
-  ' '.repeat(10) +
-  randomColor +
-  ' '.repeat(9) +
-  '#'.repeat(3) +
-  '\n';
-
-console.log(
-  chalk.hex(randomColor)(
-    `${fullRow.repeat(3)}${holeRow}${centerRow}${holeRow}${fullRow.repeat(3)}`,
-  ),
-);
+// get box dimensions and print
+print();
