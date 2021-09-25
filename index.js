@@ -1,16 +1,18 @@
 import convert from 'color-convert';
 import readline from 'readline-sync';
-import getCustomHue, { customHue } from './getCustomHue.js';
-import getCustomLightness, { customLightness } from './getCustomLightness.js';
+import getCustomHue from './getCustomHue.js';
+import getCustomLightness from './getCustomLightness.js';
 import print from './print.js';
 
 let input1 = process.argv[2];
 let input2 = process.argv[3];
 
-export let desiredHue;
-export let desiredLightness;
-export let color;
-export let boxDimensions = '31x9'; // default dimensions of the box
+let desiredHue;
+let desiredLightness;
+let customHue;
+let customLightness;
+let color;
+let boxDimensions = '31x9'; // default dimensions of the box
 
 // get random hue, saturation and lightness values in order to construct a random HSL-color.
 // restrict saturation and lightness to values between 30 and 70
@@ -44,7 +46,7 @@ if (process.argv[4] || /^(\d)/.test(process.argv[2])) {
 if (input1 === 'ask') {
   do {
     desiredHue = readline.question(`Please enter a color\n`).toLowerCase();
-    getCustomHue();
+    customHue = getCustomHue(desiredHue);
     if (!customHue) {
       console.log('Color not found. Please choose another.');
     }
@@ -53,12 +55,12 @@ if (input1 === 'ask') {
   if (customHue !== 'white' && customHue !== 'black') {
     // (if the hue value was "white" or "black", don't ask for lightness)
     desiredLightness = readline.question(`Light or dark?\n`).toLowerCase();
-    getCustomLightness();
+    customLightness = getCustomLightness(desiredLightness);
   }
 } else if (input1) {
   // if another input1 than ask, directly check for hue value
   desiredHue = input1;
-  getCustomHue();
+  customHue = getCustomHue(desiredHue);
   if (!customHue) {
     console.log('Could not find requested hue. --> Ignored!');
   }
@@ -66,7 +68,7 @@ if (input1 === 'ask') {
   if (input2) {
     // if also an input2 exists, test if it fits the lightness values
     desiredLightness = input2;
-    getCustomLightness();
+    customLightness = getCustomLightness(desiredLightness);
   }
 }
 
@@ -90,5 +92,5 @@ if (customHue === 'white') {
   color = convert.hsl.hex(randomHue, randomSaturation, randomLightness); // completely random
 }
 
-// get box dimensions and print
-print();
+// print the box with the given hex-color and in the required dimensions
+print(color, boxDimensions);

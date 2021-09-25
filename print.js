@@ -1,21 +1,22 @@
 import chalk from 'chalk';
-import { boxDimensions, color } from './index.js';
 
-export default function print() {
+// function accepts a color in HEX-format and dimensions in the form WxH
+
+export default function print(hexColor, widthXHeight) {
   let boxWidth;
   let boxHeight;
 
   // test whether input begins with 3(or more), 2 or just 1 number -> set boxWidth and boxHeight accordingly
 
-  if (/^\d\d\d/.test(boxDimensions)) {
+  if (/^\d\d\d/.test(widthXHeight)) {
     console.log('Choose a maximum width of 99.');
     return;
-  } else if (/^\d\d/.test(boxDimensions)) {
-    boxWidth = Number.parseInt(boxDimensions.slice(0, 2), 10); // first two numbers
-    boxHeight = Number.parseInt(boxDimensions.slice(3), 10); // from 4th number (could be one or more digits)
+  } else if (/^\d\d/.test(widthXHeight)) {
+    boxWidth = Number.parseInt(widthXHeight.slice(0, 2), 10); // first two numbers
+    boxHeight = Number.parseInt(widthXHeight.slice(3), 10); // from 4th number (could be one or more digits)
   } else {
-    boxWidth = Number.parseInt(boxDimensions.slice(0, 1), 10); // first number
-    boxHeight = Number.parseInt(boxDimensions.slice(2), 10); // from 3rd number (could be one or more digits)
+    boxWidth = Number.parseInt(widthXHeight.slice(0, 1), 10); // first number
+    boxHeight = Number.parseInt(widthXHeight.slice(2), 10); // from 3rd number (could be one or more digits)
   }
 
   let hashAmount; // number of # to the left and right in the three middle rows.
@@ -59,7 +60,7 @@ export default function print() {
     '#'.repeat(hashAmount) +
     ' '.repeat(Math.ceil((boxWidth - (hashAmount * 2 + 7)) / 2)) +
     '#' +
-    color +
+    hexColor +
     ' '.repeat(
       Math.ceil((boxWidth - (hashAmount * 2 + 7)) / 2 - rightShiftFactor),
     ) +
@@ -78,7 +79,7 @@ export default function print() {
   // Math.ceil((boxHeight - 3) / 2 - downShiftFactor) will then equal one less than the above rounded expression.
 
   console.log(
-    chalk.hex(color)(
+    chalk.hex(hexColor)(
       `${fullRow.repeat(
         Math.ceil((boxHeight - 3) / 2),
       )}${holeRow}${centerRow}${holeRow}${fullRow.repeat(

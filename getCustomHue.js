@@ -1,60 +1,58 @@
-import { desiredHue } from './index.js';
+// check the input values against a list and set hueDegrees accordingly:
 
-export let customHue;
-
-// check values of 'desiredHue' against a list and set the customHue accordingly:
-
-export default function getCustomHue() {
-  switch (desiredHue) {
+export default function getCustomHue(inputHue) {
+  let hueDegrees;
+  switch (inputHue) {
     case 'red':
-      customHue = 360;
+      hueDegrees = 360;
       break;
     case 'orange':
-      customHue = 30;
+      hueDegrees = 30;
       break;
     case 'yellow':
-      customHue = 60;
+      hueDegrees = 60;
       break;
     case 'olive':
-      customHue = 90;
+      hueDegrees = 90;
       break;
     case 'green':
-      customHue = 120;
+      hueDegrees = 120;
       break;
     case 'teal':
-      customHue = 150;
+      hueDegrees = 150;
       break;
     case 'cyan':
-      customHue = 180;
+      hueDegrees = 180;
       break;
     case 'blue':
-      customHue = 210;
+      hueDegrees = 210;
       break;
     case 'violet':
-      customHue = 240;
+      hueDegrees = 240;
       break;
     case 'purple':
-      customHue = 270;
+      hueDegrees = 270;
       break;
     case 'magenta':
-      customHue = 300;
+      hueDegrees = 300;
       break;
     case 'scarlet':
-      customHue = 330;
+      hueDegrees = 330;
       break;
 
     // extra cases -- (technically not hues)
 
     case 'white':
-      customHue = 'white';
+      hueDegrees = 'white';
       break;
     case 'black':
-      customHue = 'black';
+      hueDegrees = 'black';
       break;
     case 'grey':
-      customHue = 'grey';
+      hueDegrees = 'grey';
       break;
 
     default: // default - keep customHue undefined
   }
+  return hueDegrees;
 }
